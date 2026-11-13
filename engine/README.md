@@ -1,33 +1,29 @@
-# ROITH Analysis Engine (starter)
+# ROITH Analysis Engine
 
-A small, allowlisted HTTP service for static evidence triage. It does not execute uploaded files, invoke a shell, unpack archives, scan remote hosts, or claim to provide a malware verdict.
+Local-first forensic API for authorized evidence analysis. It never executes evidence or initiates network scans.
 
-## Run locally
+## Run on Windows / Linux
 Requires Python 3.12+.
 
 ```bash
 cd engine
 python -m venv .venv
-# Windows: .venv\Scripts\activate
+# Windows PowerShell: .venv\\Scripts\\Activate.ps1
 # macOS/Linux: source .venv/bin/activate
 pip install -r requirements.txt
-set ROITH_ALLOWED_ORIGINS=http://localhost:8000
 uvicorn app:app --host 127.0.0.1 --port 8000
 ```
 
-Check `GET /health`, then send a file as multipart field `file` to `POST /v1/analyze`.
+Check `GET http://127.0.0.1:8000/health` for installed module status.
 
-## Docker
-```bash
-docker build -t roith-engine .
-docker run --rm -p 8000:8000 -e ROITH_ALLOWED_ORIGINS=https://YOUR-PAGES-DOMAIN.pages.dev roith-engine
-```
+## Active endpoints
+- `GET /health`: engine and optional-module readiness.
+- `POST /v1/analyze`: bounded static file triage, SHA-256, signature, entropy and printable strings.
+- `POST /v1/pcap/analyze`: offline PCAP packet/protocol/IP/DNS summary (multipart field `file`).
+- `POST /v1/evtx/analyze`: Windows EVTX event ID/provider/time summary (multipart field `file`).
+- `POST /v1/yara/scan`: scan evidence with a supplied UTF-8 YARA rules file (multipart fields `file` and `rules`).
 
-## Before public deployment
-This starter is not production-ready for public exposure. Put it behind authentication and authorization, TLS, request rate limits, per-user quotas, malware-safe storage, audit logging, job timeouts, and private networking. Restrict origins to the exact ROITH frontend domain. Use non-root container execution (already configured), no privileged mode, no host mounts, and an ephemeral filesystem. Consider private object storage with retention controls for larger evidence. Never expose arbitrary shell execution.
+Upload limit defaults to 25 MiB; configure with `ROITH_MAX_UPLOAD_BYTES`. EVTX parsing is capped at 100,000 records.
 
-## Endpoint
-- `GET /health`: service status
-- `POST /v1/analyze`: bounded upload; SHA-256, basic file signature, sample entropy and printable strings
-
-Results are heuristic triage. Preserve original evidence and independently validate findings.
+## Safety and deployment
+This is a local development engine, not production-ready for public exposure. Keep it bound to 127.0.0.1. Do not expose it to the internet: there is no authentication yet. Before remote deployment add authentication, authorization, TLS, rate limits, quotas, audit logs, job isolation, private storage and retention controls. Preserve original evidence and work on authorized copies. YARA hits and heuristic file indicators require independent validation.
