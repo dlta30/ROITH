@@ -1,5 +1,5 @@
 from __future__ import annotations
-import hashlib, math, os, tempfile, xml.etree.ElementTree as ET
+import hashlib, math, os, shutil, subprocess, tempfile, xml.etree.ElementTree as ET
 from collections import Counter
 from pathlib import Path
 from io import BytesIO
@@ -7,7 +7,7 @@ from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-APP_VERSION = "0.2.0"
+APP_VERSION = "0.3.0"
 MAX_BYTES = int(os.getenv("ROITH_MAX_UPLOAD_BYTES", str(25 * 1024 * 1024)))
 ALLOWED_ORIGINS = [x.strip() for x in os.getenv("ROITH_ALLOWED_ORIGINS", "").split(",") if x.strip()]
 
@@ -62,6 +62,7 @@ def health():
             modules[name] = "ready"
         except ImportError:
             modules[name] = "not_installed"
+    modules["exiftool"] = "ready" if shutil.which("exiftool") else "not_installed"
     return {"status": "ok", "service": "ROITH Analysis Engine", "version": APP_VERSION, "modules": modules}
 
 @app.post("/v1/analyze")
@@ -78,6 +79,47 @@ async def analyze(file: UploadFile = File(...)):
         "analysis_scope": "Static triage only; signature and entropy are heuristics, not a malware verdict.",
         "evidence_handling": "Processed in memory; no evidence is retained."
     })
+
+@app.post("/v1/metadata/exif")
+async def analyze_metadata(file: UploadFile = File(...)):
+    executable = shutil.which("exiftool")
+    if not executable:
+        raise HTTPException(status_code=503, detail="ExifTool executable is not installed on this machine.")
+    data = await read_bounded(file)
+    if not data:
+        raise HTTPException(status_code=400, detail="The uploaded file is empty.")
+    suffix = Path(file.filename or "evidence.bin").suffix[:16]
+    fd, path = tempfile.mkstemp(prefix="roith-exif-", suffix=suffix)
+    try:
+        with os.fdopen(fd, "wb") as target:
+            target.write(data)
+        try:
+            result = subprocess.run(
+                [executable, "-json", "-G1", "-a", "-s", "-charset", "filename=UTF8", "--", path],
+                capture_output=True, text=True, encoding="utf-8", errors="replace",
+                timeout=20, check=False
+            )
+        except subprocess.TimeoutExpired:
+            raise HTTPException(status_code=408, detail="ExifTool analysis timed out after 20 seconds.")
+        if result.returncode not in (0, 1) or not result.stdout.strip():
+            raise HTTPException(status_code=400, detail=("ExifTool could not read metadata: " + result.stderr[:300]))
+        import json
+        try:
+            parsed = json.loads(result.stdout)
+        except json.JSONDecodeError:
+            raise HTTPException(status_code=502, detail="ExifTool returned an unreadable metadata response.")
+        metadata = parsed[0] if parsed and isinstance(parsed, list) else {}
+        return {
+            "filename": Path(file.filename or "evidence.bin").name[:180],
+            "size_bytes": len(data),
+            "sha256": hashlib.sha256(data).hexdigest(),
+            "metadata": metadata,
+            "metadata_fields": len(metadata),
+            "note": "Metadata extraction only. Timestamps, device fields and GPS tags may be absent, altered or unreliable; preserve the original evidence and validate findings."
+        }
+    finally:
+        try: os.unlink(path)
+        except FileNotFoundError: pass
 
 @app.post("/v1/pcap/analyze")
 async def analyze_pcap(file: UploadFile = File(...)):
