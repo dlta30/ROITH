@@ -6,6 +6,7 @@
 
   function normalizeBase(raw) {
     const url = new URL(raw);
+    if (url.username || url.password) throw new Error('Do not put credentials in the engine URL.');
     const local = ['localhost', '127.0.0.1', '[::1]'].includes(url.hostname);
     if (url.protocol !== 'https:' && !(local && url.protocol === 'http:')) {
       throw new Error('Remote ROITH engines must use HTTPS. HTTP is allowed only for localhost.');
@@ -36,6 +37,8 @@
 
   global.ROITHSecureEngine = Object.freeze({
     connect: async function (url, token) {
+      baseUrl = '';
+      bearerToken = '';
       baseUrl = normalizeBase(url);
       bearerToken = String(token || '').trim();
       if (bearerToken.length < 32) {
