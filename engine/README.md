@@ -1,3 +1,5 @@
+> **Legacy local-only API:** this file describes engine/app.py, which has no authentication. Bind it to 127.0.0.1 only and never expose its /v1 endpoints to a network. The browser Engine Console must use the separate authenticated service documented in [secure_service/README.md](secure_service/README.md).
+
 # ROITH Analysis Engine
 
 Local-first forensic API for authorized evidence analysis. It never executes evidence or initiates network scans.
