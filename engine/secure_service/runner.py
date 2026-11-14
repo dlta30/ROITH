@@ -161,7 +161,7 @@ def run_yara() -> dict[str, Any]:
     if not rules_path.is_file() or rules_path.stat().st_size > 1024 * 1024:
         raise ValueError("YARA rules file is missing or exceeds 1 MiB.")
     source = rules_path.read_text(encoding="utf-8-sig")
-    compiled = yara.compile(source=source)
+    compiled = yara.compile(source=source, includes=False)
     matches = compiled.match(filepath=str(EVIDENCE), timeout=10)
     rows = [{"rule": match.rule, "namespace": match.namespace, "tags": list(match.tags), "meta": dict(match.meta)} for match in matches[:1000]]
     return {
