@@ -25,10 +25,10 @@ This is a security-focused preview, not a certified forensic acquisition platfor
 
        TOKEN="$(python -c 'import secrets; print(secrets.token_urlsafe(48))')"
        printf '%s' "$TOKEN" | sha256sum
-       # Store the 64-character digest as ROITH_API_TOKEN_SHA256 in a root-readable env file.
+       # Store the 64-character digest as ROITH_API_TOKEN_SHA256 in a service-user-only env file.
        # Deliver the raw TOKEN to the operator over a secure channel; do not commit it.
 
-6. Copy .env.example to a private env file and set the digest, exact allowed browser origin, data directory and worker image. Restrict that env file to mode 0600. Load it into both API and dispatcher processes (or use systemd EnvironmentFile=).
+6. Copy .env.example to a private env file and set the digest, exact allowed browser origin, data directory and worker image. Restrict that env file to mode 0600 and make the roith account its owner. Load it into both API and dispatcher processes (or use systemd EnvironmentFile=).
 7. As the roith account, build the worker image with: sh build-worker.sh. The script refuses rootful Podman.
 8. Start the API with sh run-api.sh and the dispatcher with sh run-dispatcher.sh in separate service sessions. Keep the API bound to 127.0.0.1:8080; put a private VPN or a TLS reverse proxy that accepts the same Bearer authorization header in front if remote access is required.
 
