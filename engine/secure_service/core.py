@@ -63,8 +63,11 @@ def init_store() -> None:
         )
         db.execute("CREATE INDEX IF NOT EXISTS jobs_status_created ON jobs(status, created_at)")
     if not AUDIT_PATH.exists():
-        fd = os.open(AUDIT_PATH, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
-        os.close(fd)
+        try:
+            fd = os.open(AUDIT_PATH, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
+            os.close(fd)
+        except FileExistsError:
+            pass
     os.chmod(AUDIT_PATH, 0o600)
     verify_audit_chain()
 
