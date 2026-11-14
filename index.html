@@ -15,6 +15,7 @@
 <button data-page="cases"><span class="ni">▤</span><span data-en="Case Files" data-ar="ملفات القضايا">Case Files</span></button>
 <button data-page="reports"><span class="ni">▧</span><span data-en="Reports" data-ar="التقارير">Reports</span></button>
 <button data-page="arsenal"><span class="ni">✣</span><span data-en="Tool Arsenal" data-ar="ترسانة الأدوات">Tool Arsenal</span></button>
+<button data-page="engine"><span class="ni">◉</span><span data-en="Linux Engine" data-ar="محرك Linux">Linux Engine</span></button>
 <button data-page="utilities"><span class="ni">⚙</span><span data-en="Utilities" data-ar="الأدوات المساعدة">Utilities</span></button>
 <button data-page="about"><span class="ni">ⓘ</span><span data-en="System Info" data-ar="معلومات النظام">System Info</span></button></nav>
 <div class="side-bottom"><div class="statusbox"><div class="statusline"><i class="dot"></i><b data-en="LOCAL ANALYSIS READY" data-ar="التحليل المحلي جاهز">LOCAL ANALYSIS READY</b></div><p>ROITH CORE / WEB BUILD 02</p></div></div></aside>
@@ -41,7 +42,29 @@
 <div class="module"><div class="mi">⌁</div><h3>Wireshark / PCAP</h3><p data-en="Packet capture parsing, protocol summaries and flow timelines." data-ar="تحليل حزم الشبكة وملخص البروتوكولات والخطوط الزمنية للتدفقات.">Packet capture parsing, protocol summaries and flow timelines.</p><span class="pill redpill">PLANNED</span></div>
 <div class="module"><div class="mi">▤</div><h3>EVTX Explorer</h3><p data-en="Windows event log parsing and event correlation." data-ar="تحليل سجلات أحداث Windows وربط الأحداث.">Windows event log parsing and event correlation.</p><span class="pill redpill">PLANNED</span></div>
 <div class="module"><div class="mi">⌖</div><h3>YARA Rules</h3><p data-en="Signature-based file triage using curated defensive rules." data-ar="فرز الملفات باستخدام قواعد كشف دفاعية منتقاة.">Signature-based file triage using curated defensive rules.</p><span class="pill redpill">PLANNED</span></div>
-</div><div class="notice" data-en="These are roadmap entries, not active tools in this static release. The next phase needs a separate Linux worker, authentication, job isolation, resource limits and audit logs. No arbitrary shell execution will be exposed to the browser." data-ar="هذه عناصر في خارطة الطريق وليست أدوات مفعّلة في هذه النسخة الثابتة. المرحلة التالية تحتاج خادماً منفصلاً بنظام Linux ومصادقة وعزل للمهام وحدود موارد وسجلات تدقيق. لن نتيح تنفيذ أوامر عشوائية من المتصفح.">These are roadmap entries, not active tools in this static release. The next phase needs a separate Linux worker, authentication, job isolation, resource limits and audit logs. No arbitrary shell execution will be exposed to the browser.</div></section>
+</div><div class="notice" data-en="These specialist tools are not active until the separate Linux service is installed and connected in the Engine Console. The secure service preview now defines authentication, an allowlist, isolated jobs, resource quotas and audit logs. Volatility 3, Autopsy/Sleuth Kit and Nmap remain planned and are not enabled." data-ar="هذه عناصر في خارطة الطريق وليست أدوات مفعّلة في هذه النسخة الثابتة. المرحلة التالية تحتاج خادماً منفصلاً بنظام Linux ومصادقة وعزل للمهام وحدود موارد وسجلات تدقيق. لن نتيح تنفيذ أوامر عشوائية من المتصفح.">These are roadmap entries, not active tools in this static release. The next phase needs a separate Linux worker, authentication, job isolation, resource limits and audit logs. No arbitrary shell execution will be exposed to the browser.</div></section>
+<section class="page" id="engine">
+<div class="hero"><div><div class="kicker">MODULE 08 / PRIVATE LINUX WORKER</div><h1 data-en="Secure Linux Engine" data-ar="محرك Linux الآمن">Secure Linux Engine</h1><p data-en="Send selected evidence to your separately hosted, authenticated Linux worker. Nothing is uploaded until you submit a job." data-ar="أرسل الأدلة التي تختارها إلى محرك Linux منفصل ومصادق عليه. لا يتم رفع أي ملف قبل إرسال المهمة.">Send selected evidence to your separately hosted, authenticated Linux worker. Nothing is uploaded until you submit a job.</p></div></div>
+<div class="section-grid">
+<div class="panel">
+<h2 data-en="Private engine connection" data-ar="اتصال المحرك الخاص">Private engine connection</h2>
+<p class="panel-sub" data-en="Use your private HTTPS endpoint. The API token stays in page memory and is not saved to browser storage." data-ar="استخدم عنوان HTTPS الخاص بك. يبقى رمز API في ذاكرة الصفحة ولا يُحفظ في تخزين المتصفح.">Use your private HTTPS endpoint. The API token stays in page memory and is not saved to browser storage.</p>
+<div class="field"><label data-en="ENGINE BASE URL" data-ar="عنوان المحرك">ENGINE BASE URL</label><input id="engineUrl" type="url" placeholder="https://forensic.example.com" autocomplete="off"></div>
+<div class="field"><label data-en="BEARER API TOKEN" data-ar="رمز API السري">BEARER API TOKEN</label><input id="engineToken" type="password" placeholder="Paste the private operator token" autocomplete="off"></div>
+<div class="top-actions" style="margin:14px 0"><button class="btn red" id="engineConnect" data-en="Connect & Verify" data-ar="اتصال وتحقق">Connect & Verify</button><button class="btn" id="engineDisconnect" data-en="Disconnect" data-ar="قطع الاتصال">Disconnect</button></div>
+<div id="engineStatus" class="output" style="max-height:110px">Not connected. The Linux service must be installed separately.</div>
+</div>
+<div class="panel">
+<h2 data-en="Submit forensic job" data-ar="إرسال مهمة جنائية">Submit forensic job</h2>
+<div class="field"><label data-en="ALLOWLISTED TASK" data-ar="نوع المهمة المسموح">ALLOWLISTED TASK</label><select id="engineTask"><option value="triage">Static file triage</option><option value="pcap">Offline PCAP analysis</option><option value="evtx">Windows EVTX analysis</option><option value="yara">YARA scan</option><option value="exif">ExifTool metadata</option></select></div>
+<div class="field"><label data-en="EVIDENCE FILE (MAX 25 MiB)" data-ar="ملف الدليل (حد 25 ميبيبايت)">EVIDENCE FILE (MAX 25 MiB)</label><input type="file" id="engineFile"></div>
+<div class="field" id="engineRulesWrap" style="display:none"><label data-en="YARA RULES FILE (MAX 1 MiB)" data-ar="ملف قواعد YARA (حد 1 ميبيبايت)">YARA RULES FILE (MAX 1 MiB)</label><input type="file" id="engineRules" accept=".yar,.yara,.txt"></div>
+<div class="top-actions" style="margin:14px 0"><button class="btn red" id="engineSubmit" data-en="Submit Isolated Job" data-ar="إرسال مهمة معزولة">Submit Isolated Job</button><button class="btn" id="engineAudit" data-en="Verify Audit Chain" data-ar="التحقق من سجل التدقيق">Verify Audit Chain</button></div>
+<div id="engineOutput" class="output">No remote job submitted.</div>
+</div>
+</div>
+<div class="notice" data-en="Only the fixed tasks returned by the service can run. The worker has no network access and receives evidence read-only. Use only a service URL you control and trust. Remote connections require HTTPS and the exact ROITH page origin must be configured in the Linux service." data-ar="لا يمكن تشغيل إلا المهام المحددة التي يعرضها الخادم. لا يملك العامل اتصالاً بالشبكة ويستقبل الأدلة للقراءة فقط. استخدم عنوان خدمة تملكه وتثق به فقط. الاتصالات البعيدة تتطلب HTTPS ويجب ضبط أصل صفحة ROITH بدقة في خدمة Linux.">Only the fixed tasks returned by the service can run. The worker has no network access and receives evidence read-only. Use only a service URL you control and trust. Remote connections require HTTPS and the exact ROITH page origin must be configured in the Linux service.</div>
+</section>
 <section class="page" id="utilities"><div class="hero"><div><div class="kicker">MODULE 07 / QUICK FORENSIC UTILITIES</div><h1 data-en="Forensic Utilities" data-ar="أدوات جنائية مساعدة">Forensic Utilities</h1><p data-en="Four working, browser-local utilities. No files or text are uploaded." data-ar="أربع أدوات تعمل محلياً في المتصفح دون رفع الملفات أو النصوص.">Four working, browser-local utilities. No files or text are uploaded.</p></div></div>
 <div class="section-grid">
 <div class="panel"><h2 data-en="Hash Comparator" data-ar="مقارنة البصمات">Hash Comparator</h2><p class="panel-sub" data-en="Compare two SHA-256 values." data-ar="قارن قيمتي SHA-256.">Compare two SHA-256 values.</p><div class="field"><label>HASH A</label><input id="hashA" spellcheck="false" placeholder="Paste first SHA-256"></div><div class="field"><label>HASH B</label><input id="hashB" spellcheck="false" placeholder="Paste second SHA-256"></div><button class="btn red" id="compareHashes">Compare</button><div class="output" id="hashCompareOut" style="margin-top:12px">Waiting for two hashes…</div></div>
@@ -49,9 +72,10 @@
 <div class="panel"><h2 data-en="Timestamp Converter" data-ar="محول الطوابع الزمنية">Timestamp Converter</h2><p class="panel-sub" data-en="Convert Unix seconds or milliseconds to UTC." data-ar="حوّل وقت Unix بالثواني أو المللي ثانية إلى UTC.">Convert Unix seconds or milliseconds to UTC.</p><div class="field"><label>UNIX TIMESTAMP</label><input id="unixInput" inputmode="decimal" placeholder="e.g. 1735689600"></div><button class="btn red" id="convertUnix">Convert</button><div class="output" id="unixOutput" style="margin-top:12px">UTC result appears here.</div></div>
 <div class="panel"><h2 data-en="IOC Extractor" data-ar="استخراج مؤشرات الاختراق">IOC Extractor</h2><p class="panel-sub" data-en="Extract IPs, URLs, domains and email addresses from text." data-ar="استخرج عناوين IP والروابط والنطاقات والبريد من النص.">Extract IPs, URLs, domains and email addresses from text.</p><div class="field"><label>TEXT / LOG SAMPLE</label><textarea id="iocInput" placeholder="Paste authorized log text or notes"></textarea></div><button class="btn red" id="extractIoc">Extract IOCs</button><div class="output" id="iocOutput" style="margin-top:12px">No indicators extracted.</div></div>
 </div><div class="notice" data-en="IOC extraction is pattern-based and may include false positives. Validate every indicator before acting on it." data-ar="استخراج المؤشرات يعتمد على الأنماط وقد ينتج نتائج غير دقيقة. تحقق من كل مؤشر قبل اتخاذ أي إجراء.">IOC extraction is pattern-based and may include false positives. Validate every indicator before acting on it.</div></section>
-<section class="page" id="about"><div class="hero"><div><div class="kicker">SYSTEM / ABOUT</div><h1 data-en="ROITH System Profile" data-ar="ملف نظام ROITH">ROITH System Profile</h1><p data-en="A digital forensics workspace designed around evidence handling, integrity and clear reporting." data-ar="منصة تحقيق جنائي رقمي تركز على التعامل مع الأدلة وسلامتها ووضوح التقارير.">A digital forensics workspace designed around evidence handling, integrity and clear reporting.</p></div></div><div class="panel"><h2>ROITH / F</h2><p class="panel-sub" style="line-height:1.9" data-en="This release runs entirely in your browser. Active capabilities: SHA-256, basic file signature recognition, entropy estimate, printable string extraction, browser metadata timeline, local case notes, JSON manifests and PDF reports. It is not a replacement for Kali Linux or a certified forensic suite. Kali is a Linux distribution; ROITH is intended to become a specialized investigation workspace that can orchestrate selected tools safely." data-ar="تعمل هذه النسخة بالكامل داخل المتصفح. الإمكانات الحالية: بصمة SHA-256 والتعرف الأساسي على تواقيع الملفات وتقدير الإنتروبيا واستخراج النصوص القابلة للطباعة والخط الزمني لبيانات المتصفح وملاحظات القضايا المحلية وسجلات JSON وتقارير PDF. النظام ليس بديلاً عن Kali Linux أو حزمة جنائية معتمدة. كالي توزيعة لينكس، وROITH منصة تحقيق متخصصة نعمل على تطويرها لربط أدوات مختارة بطريقة آمنة.">This release runs entirely in your browser. Active capabilities: SHA-256, basic file signature recognition, entropy estimate, printable string extraction, browser metadata timeline, local case notes, JSON manifests and PDF reports. It is not a replacement for Kali Linux or a certified forensic suite. Kali is a Linux distribution; ROITH is intended to become a specialized investigation workspace that can orchestrate selected tools safely.</p><div class="notice" data-en="Evidence selected here is processed locally. Case notes are stored in local browser storage. Do not use this prototype as the sole basis for legal or disciplinary conclusions." data-ar="تتم معالجة الأدلة المحددة محلياً. تحفظ ملاحظات القضية في مساحة تخزين المتصفح. لا تعتمد على هذا النموذج وحده لاتخاذ استنتاجات قانونية أو تأديبية.">Evidence selected here is processed locally. Case notes are stored in local browser storage. Do not use this prototype as the sole basis for legal or disciplinary conclusions.</div></div></section>
+<section class="page" id="about"><div class="hero"><div><div class="kicker">SYSTEM / ABOUT</div><h1 data-en="ROITH System Profile" data-ar="ملف نظام ROITH">ROITH System Profile</h1><p data-en="A digital forensics workspace designed around evidence handling, integrity and clear reporting." data-ar="منصة تحقيق جنائي رقمي تركز على التعامل مع الأدلة وسلامتها ووضوح التقارير.">A digital forensics workspace designed around evidence handling, integrity and clear reporting.</p></div></div><div class="panel"><h2>ROITH / F</h2><p class="panel-sub" style="line-height:1.9" data-en="The ROITH core runs in your browser. Local capabilities include SHA-256, basic file signatures, entropy, printable strings, browser metadata timelines, local case notes, JSON manifests and PDF reports. An optional authenticated Linux engine can receive files only when you explicitly submit a forensic job. It is not a replacement for Kali Linux or a certified forensic suite." data-ar="تعمل هذه النسخة بالكامل داخل المتصفح. الإمكانات الحالية: بصمة SHA-256 والتعرف الأساسي على تواقيع الملفات وتقدير الإنتروبيا واستخراج النصوص القابلة للطباعة والخط الزمني لبيانات المتصفح وملاحظات القضايا المحلية وسجلات JSON وتقارير PDF. النظام ليس بديلاً عن Kali Linux أو حزمة جنائية معتمدة. كالي توزيعة لينكس، وROITH منصة تحقيق متخصصة نعمل على تطويرها لربط أدوات مختارة بطريقة آمنة.">This release runs entirely in your browser. Active capabilities: SHA-256, basic file signature recognition, entropy estimate, printable string extraction, browser metadata timeline, local case notes, JSON manifests and PDF reports. It is not a replacement for Kali Linux or a certified forensic suite. Kali is a Linux distribution; ROITH is intended to become a specialized investigation workspace that can orchestrate selected tools safely.</p><div class="notice" data-en="Evidence selected here is processed locally. Case notes are stored in local browser storage. Do not use this prototype as the sole basis for legal or disciplinary conclusions." data-ar="تتم معالجة الأدلة المحددة محلياً. تحفظ ملاحظات القضية في مساحة تخزين المتصفح. لا تعتمد على هذا النموذج وحده لاتخاذ استنتاجات قانونية أو تأديبية.">Evidence selected here is processed locally. Case notes are stored in local browser storage. Do not use this prototype as the sole basis for legal or disciplinary conclusions.</div></div></section>
 <div class="foot"><span>ROITH / FORENSIC INTELLIGENCE</span><span>F CORE • BUILD 02 • LOCAL-FIRST</span></div></main></div>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
+<script src="engine/secure_service/client.js"></script>
 <script>
 const $=id=>document.getElementById(id);let lang='en',analysisRecords=[],manifestRecords=[];
 const pages=[...document.querySelectorAll('.page')];function showPage(id){pages.forEach(p=>p.classList.toggle('active',p.id===id));document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===id));$('crumb').textContent=id.replace(/([A-Z])/g,' $1').toUpperCase();if(id==='reports')refreshReport();window.scrollTo({top:0,behavior:'smooth'})}
@@ -80,4 +104,58 @@ $('convertUnix').onclick=()=>{const raw=$('unixInput').value.trim();const n=Numb
 $('extractIoc').onclick=()=>{const t=$('iocInput').value;const matches={IPv4:[...new Set(t.match(/\b(?:25[0-5]|2[0-4]\d|1?\d?\d)(?:\.(?:25[0-5]|2[0-4]\d|1?\d?\d)){3}\b/g)||[])],URLs:[...new Set(t.match(/https?:\/\/[^\s<>"']+/gi)||[])],Emails:[...new Set(t.match(/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi)||[])],Domains:[...new Set((t.match(/\b(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}\b/gi)||[]).filter(x=>!x.includes('@')))]};const lines=Object.entries(matches).map(([k,v])=>k+' ('+v.length+')\n'+(v.join('\n')||'(none)'));$('iocOutput').textContent=lines.join('\n\n');logActivity('IOC extraction completed',Object.values(matches).reduce((n,v)=>n+v.length,0)+' indicators extracted')};
 function refreshReport(){const c=readCase();$('reportSummary').textContent='CASE: '+(c?.ref||'Not specified')+'\nINVESTIGATOR: '+(c?.investigator||'Not specified')+'\nNOTES: '+(c?.notes||'No notes')+'\n\nANALYZED FILES: '+analysisRecords.length+'\n'+analysisRecords.map(r=>r.name+' | '+r.signature+' | SHA-256 '+r.sha256).join('\n')}
 $('exportPDF').onclick=()=>{if(!window.jspdf){alert('PDF library needs an internet connection.');return}const d=new window.jspdf.jsPDF();let y=18;d.setFont('helvetica','bold');d.setFontSize(18);d.text('ROITH - DIGITAL FORENSICS REPORT',14,y);y+=10;d.setFont('helvetica','normal');d.setFontSize(9);const c=readCase()||{};const lines=['Generated: '+new Date().toISOString(),'Case: '+(c.ref||'Not specified'),'Investigator: '+(c.investigator||'Not specified'),'','CASE NOTES',...(d.splitTextToSize(c.notes||'No notes recorded.',180)),'','ANALYZED EVIDENCE'];for(const r of analysisRecords)lines.push(r.name+' | '+r.size+' bytes | '+r.signature,'SHA-256: '+r.sha256,'Entropy: '+r.entropy);for(const line of lines){const parts=d.splitTextToSize(String(line),180);if(y+parts.length*5>280){d.addPage();y=18}d.text(parts,14,y);y+=parts.length*5+2}d.save('ROITH-forensic-report.pdf');logActivity('PDF report exported','ROITH-forensic-report.pdf')};
+
+let engineConnected=false;
+function engineStatus(message,good){$('engineStatus').textContent=message;$('engineStatus').style.borderColor=good?'#276e4d':'#604a28';}
+$('engineTask').onchange=()=>{$('engineRulesWrap').style.display=$('engineTask').value==='yara'?'grid':'none'};
+$('engineConnect').onclick=async()=>{
+  const url=$('engineUrl').value.trim(),token=$('engineToken').value;
+  $('engineStatus').textContent='Checking private service and authenticating...';
+  try{
+    const health=await ROITHSecureEngine.connect(url,token);
+    $('engineToken').value='';
+    const data=await ROITHSecureEngine.tasks();
+    const select=$('engineTask'),previous=select.value;
+    select.innerHTML='';
+    data.tasks.forEach(task=>{const option=document.createElement('option');option.value=task.id;option.textContent=task.id.toUpperCase()+' — '+task.description;select.appendChild(option)});
+    if(data.tasks.some(task=>task.id===previous))select.value=previous;
+    engineConnected=true;
+    engineStatus('CONNECTED / '+health.service+' / '+health.version+' / '+data.tasks.length+' allowlisted tasks',true);
+    logActivity('Secure Linux engine connected','Authenticated private forensic API');
+  }catch(error){engineConnected=false;ROITHSecureEngine.disconnect();$('engineToken').value='';engineStatus('CONNECTION FAILED / '+error.message,false)}
+};
+$('engineDisconnect').onclick=()=>{ROITHSecureEngine.disconnect();engineConnected=false;$('engineToken').value='';engineStatus('Disconnected. The token was cleared from page memory.',false)};
+$('engineAudit').onclick=async()=>{
+  if(!engineConnected){engineStatus('Connect to the private engine first.',false);return}
+  try{$('engineOutput').textContent='Verifying audit chain...';const result=await ROITHSecureEngine.verifyAudit();$('engineOutput').textContent=JSON.stringify(result,null,2)}
+  catch(error){$('engineOutput').textContent='Audit verification failed: '+error.message}
+};
+$('engineSubmit').onclick=async()=>{
+  if(!engineConnected){$('engineOutput').textContent='Connect to the private engine first.';return}
+  const task=$('engineTask').value,file=$('engineFile').files[0],rules=$('engineRules').files[0];
+  if(!file){$('engineOutput').textContent='Select an evidence file first.';return}
+  if(file.size>25*1024*1024){$('engineOutput').textContent='Evidence exceeds the 25 MiB limit.';return}
+  if(task==='yara'&&!rules){$('engineOutput').textContent='Select a YARA rules file.';return}
+  if(rules&&rules.size>1024*1024){$('engineOutput').textContent='YARA rules exceed the 1 MiB limit.';return}
+  $('engineOutput').textContent='Uploading evidence and creating an isolated job...';
+  try{
+    const submitted=await ROITHSecureEngine.submit(task,file,task==='yara'?rules:null);
+    const id=submitted.job.id;
+    $('engineOutput').textContent='JOB '+id+'\nSTATUS: QUEUED\nEvidence SHA-256: '+submitted.job.sha256;
+    logActivity('Forensic job queued',task+' / '+file.name);
+    let finalStatus='queued';
+    for(let i=0;i<150;i++){
+      await new Promise(resolve=>setTimeout(resolve,2000));
+      const snapshot=await ROITHSecureEngine.getJob(id);
+      finalStatus=snapshot.job.status;
+      $('engineOutput').textContent=JSON.stringify(snapshot.job,null,2);
+      if(finalStatus==='completed'||finalStatus==='failed')break;
+    }
+    if(finalStatus==='completed')logActivity('Forensic job completed',task+' / '+id);
+    else if(finalStatus==='failed')logActivity('Forensic job failed',task+' / '+id);
+    else $('engineOutput').textContent+='\\nPolling limit reached. The job may still be running; check it again after reconnecting.';
+  }catch(error){$('engineOutput').textContent='JOB ERROR / '+error.message}
+};
+window.addEventListener('pagehide',()=>ROITHSecureEngine.disconnect());
+
 </script></body></html>
