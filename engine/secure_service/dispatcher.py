@@ -43,7 +43,7 @@ def build_podman_args(job: dict[str, Any], podman: str = PODMAN, image: str = WO
         "--user=65532:65532",
         "--tmpfs", "/tmp:rw,noexec,nosuid,nodev,size=64m,uid=65532,gid=65532",
         "--mount", f"type=bind,src={job_dir},dst=/evidence,ro",
-        image, "python", "-I", "/app/runner.py", task,
+        image, task,
     ]
 
 
