@@ -19,11 +19,11 @@ from fastapi.responses import JSONResponse
 import core
 
 APP_VERSION = "1.0.0-secure-preview"
-MAX_UPLOAD_BYTES = int(os.getenv("ROITH_MAX_UPLOAD_BYTES", str(25 * 1024 * 1024)))
+MAX_UPLOAD_BYTES = max(1, min(int(os.getenv("ROITH_MAX_UPLOAD_BYTES", str(25 * 1024 * 1024))), 25 * 1024 * 1024))
 MAX_RULE_BYTES = 1 * 1024 * 1024
-MAX_QUEUED_JOBS = int(os.getenv("ROITH_MAX_QUEUED_JOBS", "10"))
-MAX_JOBS_PER_HOUR = int(os.getenv("ROITH_MAX_JOBS_PER_HOUR", "20"))
-MAX_STORED_BYTES = int(os.getenv("ROITH_MAX_STORED_BYTES", str(5 * 1024 * 1024 * 1024)))
+MAX_QUEUED_JOBS = max(1, min(int(os.getenv("ROITH_MAX_QUEUED_JOBS", "10")), 100))
+MAX_JOBS_PER_HOUR = max(1, min(int(os.getenv("ROITH_MAX_JOBS_PER_HOUR", "20")), 500))
+MAX_STORED_BYTES = max(25 * 1024 * 1024, min(int(os.getenv("ROITH_MAX_STORED_BYTES", str(5 * 1024 * 1024 * 1024))), 50 * 1024 * 1024 * 1024))
 MAX_BODY_BYTES = MAX_UPLOAD_BYTES + MAX_RULE_BYTES + 1024 * 1024
 _upload_lock = asyncio.Lock()
 ALLOWED_TASKS = {
