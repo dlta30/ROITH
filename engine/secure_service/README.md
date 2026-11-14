@@ -30,9 +30,9 @@ This is a security-focused preview, not a certified forensic acquisition platfor
 
 6. Copy .env.example to a private env file and set the digest, exact allowed browser origin, data directory and worker image. Restrict that env file to mode 0600. Load it into both API and dispatcher processes (or use systemd EnvironmentFile=).
 7. As the roith account, build the worker image with: sh build-worker.sh. The script refuses rootful Podman.
-8. Start the API with sh run-api.sh and the dispatcher with sh run-dispatcher.sh in separate service sessions. Keep the API bound to 127.0.0.1:8080; put a private VPN or authenticated TLS reverse proxy in front if remote access is required.
+8. Start the API with sh run-api.sh and the dispatcher with sh run-dispatcher.sh in separate service sessions. Keep the API bound to 127.0.0.1:8080; put a private VPN or a TLS reverse proxy that accepts the same Bearer authorization header in front if remote access is required.
 
-Do not expose port 8080 directly to the public internet. If using a reverse proxy, enforce a request-body limit no larger than approximately 27 MiB and HTTPS. For a Cloudflare Pages front end, use a private authenticated gateway/VPN or an Access-protected tunnel. Do not embed the master token in index.html, JavaScript source, a public repository, or a browser-exposed Pages variable.
+Do not expose port 8080 directly to the public internet. If using a reverse proxy, enforce a request-body limit no larger than approximately 27 MiB and HTTPS. For a Cloudflare Pages front end, use a private VPN or a server-side authenticated proxy that forwards requests to the loopback API. Do not embed the master token in index.html, JavaScript source, a public repository, or a browser-exposed Pages variable.
 
 ## API contract
 
