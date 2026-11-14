@@ -92,7 +92,7 @@ def test_dispatcher_uses_only_fixed_container_command(tmp_path, monkeypatch):
     assert "--network=none" in args
     assert "--read-only" in args
     assert "--cap-drop=all" in args
-    assert args[-2:] == ["/app/runner.py", "pcap"]
+    assert args[-2:] == ["test-image", "pcap"]
     with pytest.raises(ValueError):
         dispatcher.build_podman_args({"id": job_id, "task": "shell"}, podman="podman", image="test-image")
 
