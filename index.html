@@ -109,6 +109,7 @@ let engineConnected=false;
 function engineStatus(message,good){$('engineStatus').textContent=message;$('engineStatus').style.borderColor=good?'#276e4d':'#604a28';}
 $('engineTask').onchange=()=>{$('engineRulesWrap').style.display=$('engineTask').value==='yara'?'grid':'none'};
 $('engineConnect').onclick=async()=>{
+  ROITHSecureEngine.disconnect();engineConnected=false;
   const url=$('engineUrl').value.trim(),token=$('engineToken').value;
   $('engineStatus').textContent='Checking private service and authenticating...';
   try{
